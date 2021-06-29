@@ -4,6 +4,26 @@ library(openxlsx)
 db <- read.csv("C:/Users/user/Downloads/human_gene_id.csv")
 head(db)
 
+#Import DE genes
+HCV.NEW_up <- read.xlsx("HCV.NEW_up.xlsx")
+HCV.NEW_down <- read.xlsx("HCV.NEW_down.xlsx")
+SARS_up <- read.xlsx("SARS_up.xlsx")
+SARS_down <- read.xlsx("SARS_down.xlsx")
+SARS.HCV_up <- read.xlsx("SARS.HCV_up.xlsx")
+SARS.HCV_down <- read.xlsx("SARS.HCV_down.xlsx")
+
+#Summarize UP and DOWN
+HCV.NEW_DE <- c(HCV.NEW_up, HCV.NEW_down)
+SARS_DE <- c(SARS_up, SARS_down)
+SARS.HCV_DE <- c(SARS.HCV_up, SARS.HCV_down)
+
+#Plot expressed genes from control
+data <- read.table("GeneMat_HCV_IFN_updated.txt", header=T)
+rownames(data) <- data.frame(do.call(rbind, strsplit(as.character(rownames(data)), "_", fixed=T)))[,2]
+head(data)
+Control_data_matrix <- data[,1:6]
+save(Control_data_matrix, file="Control_data_matrix.Rdata")
+
 HCV.NEW_db <- as.character(db$GeneID[na.omit(match(HCV.NEW_DE, toupper(db$Symbol)))])
 KEGG_HCV.NEW <- find_enriched_pathway(HCV.NEW_db, species = "hsa", returned_adjpvalue = 0.05, download_latest=T)[[1]][,c(1,6)]
 KEGG_HCV.NEW_diff_pathways <- as.character(KEGG_HCV.NEW$Pathway_Name)
